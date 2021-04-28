@@ -1,5 +1,6 @@
 package com.example.exchangeapplication.modal;
 
+import com.example.exchangeapplication.enums.CurrencyType;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,6 +13,6 @@ import java.util.Map;
 @Data
 public class CurrencyRate {
     private String base;
-    private Map<String, BigDecimal> rates;
+    private Map<CurrencyType, BigDecimal> rates;
     private LocalDate date;
 }

@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,12 +20,14 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Exchange implements Serializable {
+public class ExchangeTransaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private BigDecimal sourceAmount;
+    @Enumerated(EnumType.STRING)
     private CurrencyType sourceCurrency;
+    @Enumerated(EnumType.STRING)
     private CurrencyType targetCurrency;
     private BigDecimal targetAmount;
     private BigDecimal currencyPrice;

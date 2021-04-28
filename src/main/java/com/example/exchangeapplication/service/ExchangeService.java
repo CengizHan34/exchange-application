@@ -1,5 +1,8 @@
 package com.example.exchangeapplication.service;
 
+import com.example.exchangeapplication.modal.CurrencyConversionRequest;
+import com.example.exchangeapplication.modal.CurrencyConversionResponse;
+
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -8,4 +11,5 @@ import java.util.Map;
  */
 public interface ExchangeService {
     Map<String, BigDecimal> getExchangeRate(String currencyPair);
+    CurrencyConversionResponse currencyConversion(CurrencyConversionRequest request);
 }

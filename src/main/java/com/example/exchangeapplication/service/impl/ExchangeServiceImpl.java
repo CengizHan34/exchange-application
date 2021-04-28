@@ -1,7 +1,10 @@
 package com.example.exchangeapplication.service.impl;
 
+import com.example.exchangeapplication.entity.ExchangeTransaction;
 import com.example.exchangeapplication.enums.CurrencyType;
 import com.example.exchangeapplication.exceptions.InvalidCurrency;
+import com.example.exchangeapplication.modal.CurrencyConversionRequest;
+import com.example.exchangeapplication.modal.CurrencyConversionResponse;
 import com.example.exchangeapplication.modal.CurrencyRate;
 import com.example.exchangeapplication.repository.ExchangeRepository;
 import com.example.exchangeapplication.service.ExchangeService;
@@ -18,8 +21,10 @@ import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,9 +47,29 @@ public class ExchangeServiceImpl implements ExchangeService {
         AtomicReference<CurrencyType> symbols = new AtomicReference<>();
 
         checkCurrencyPair(base, symbols, currencyPair.toUpperCase(Locale.ROOT));
-        CurrencyRate currencyRate = getRate(base.get(), symbols.get());
+        CurrencyRate currencyRate = getCurrencyRate(base.get(), symbols.get());
 
-        return Map.of(String.format("%s/%s",base.get(), symbols.get()), currencyRate.getRates().get(symbols.get().toString()));
+        return Map.of(String.format("%s/%s",base.get(), symbols.get()), currencyRate.getRates().get(symbols.get()));
+    }
+
+    @Override
+    public CurrencyConversionResponse currencyConversion(final CurrencyConversionRequest request) {
+        CurrencyRate currencyRate = getCurrencyRate(request.getSourceCurrency(),request.getTargetCurrency());
+        BigDecimal targetAmount = currencyRate.getRates().get(request.getTargetCurrency()).multiply(request.getSourceAmount());
+
+        ExchangeTransaction exchangeTransaction = ExchangeTransaction.builder()
+                .transactionId(UUID.randomUUID()).transactionDate(LocalDateTime.now())
+                .sourceCurrency(request.getSourceCurrency()).targetCurrency(request.getTargetCurrency())
+                .currencyPrice(currencyRate.getRates().get(request.getTargetCurrency()))
+                .sourceAmount(request.getSourceAmount()).targetAmount(targetAmount)
+                .build();
+
+        ExchangeTransaction exchangeTransactionSaved = exchangeRepository.save(exchangeTransaction);
+        log.info(String.format("Transaction successfully saved. transactionId: %s",exchangeTransaction.getTransactionId().toString()));
+
+        Map currencyAmount = Map.of(exchangeTransactionSaved.getTargetCurrency(),exchangeTransactionSaved.getTargetAmount());
+        return CurrencyConversionResponse.builder().transactionId(exchangeTransactionSaved.getTransactionId())
+                .currencyAmount(currencyAmount).build();
     }
 
     private void checkCurrencyPair(AtomicReference<CurrencyType> base, AtomicReference<CurrencyType> symbols, String currencyPair){
@@ -64,7 +89,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         }
     }
 
-    private CurrencyRate getRate(final CurrencyType base, final CurrencyType symbols) {
+    private CurrencyRate getCurrencyRate(final CurrencyType base, final CurrencyType symbols) {
         StringBuilder currencyPairBuilder = new StringBuilder(ratesApiUrl)
                 .append("?base=").append(base).append("&").append("symbols=").append(symbols);
         URI uri = null;
