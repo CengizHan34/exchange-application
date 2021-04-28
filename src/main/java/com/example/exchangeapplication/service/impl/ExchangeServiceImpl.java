@@ -1,21 +1,26 @@
 package com.example.exchangeapplication.service.impl;
 
+import com.example.exchangeapplication.dto.CurrencyConversionRequest;
+import com.example.exchangeapplication.dto.CurrencyConversionResponse;
+import com.example.exchangeapplication.dto.CurrencyRate;
 import com.example.exchangeapplication.entity.ExchangeTransaction;
 import com.example.exchangeapplication.enums.CurrencyType;
 import com.example.exchangeapplication.exceptions.InvalidCurrency;
-import com.example.exchangeapplication.modal.CurrencyConversionRequest;
-import com.example.exchangeapplication.modal.CurrencyConversionResponse;
-import com.example.exchangeapplication.modal.CurrencyRate;
 import com.example.exchangeapplication.repository.ExchangeRepository;
 import com.example.exchangeapplication.service.ExchangeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -41,20 +46,22 @@ public class ExchangeServiceImpl implements ExchangeService {
     private final RestTemplate restTemplate;
     private final ExchangeRepository exchangeRepository;
 
+    private static final Integer DEFAULT_PAGE_SIZE = 10;
+
     @Override
-    public Map<String,BigDecimal> getExchangeRate(final String currencyPair) {
+    public Map<String, BigDecimal> getExchangeRate(final String currencyPair) {
         AtomicReference<CurrencyType> base = new AtomicReference<>();
         AtomicReference<CurrencyType> symbols = new AtomicReference<>();
 
         checkCurrencyPair(base, symbols, currencyPair.toUpperCase(Locale.ROOT));
         CurrencyRate currencyRate = getCurrencyRate(base.get(), symbols.get());
 
-        return Map.of(String.format("%s/%s",base.get(), symbols.get()), currencyRate.getRates().get(symbols.get()));
+        return Map.of(String.format("%s/%s", base.get(), symbols.get()), currencyRate.getRates().get(symbols.get()));
     }
 
     @Override
     public CurrencyConversionResponse currencyConversion(final CurrencyConversionRequest request) {
-        CurrencyRate currencyRate = getCurrencyRate(request.getSourceCurrency(),request.getTargetCurrency());
+        CurrencyRate currencyRate = getCurrencyRate(request.getSourceCurrency(), request.getTargetCurrency());
         BigDecimal targetAmount = currencyRate.getRates().get(request.getTargetCurrency()).multiply(request.getSourceAmount());
 
         ExchangeTransaction exchangeTransaction = ExchangeTransaction.builder()
@@ -65,14 +72,27 @@ public class ExchangeServiceImpl implements ExchangeService {
                 .build();
 
         ExchangeTransaction exchangeTransactionSaved = exchangeRepository.save(exchangeTransaction);
-        log.info(String.format("Transaction successfully saved. transactionId: %s",exchangeTransaction.getTransactionId().toString()));
+        log.info(String.format("Transaction successfully saved. transactionId: %s", exchangeTransaction.getTransactionId().toString()));
 
-        Map currencyAmount = Map.of(exchangeTransactionSaved.getTargetCurrency(),exchangeTransactionSaved.getTargetAmount());
+        Map currencyAmount = Map.of(exchangeTransactionSaved.getTargetCurrency(), exchangeTransactionSaved.getTargetAmount());
         return CurrencyConversionResponse.builder().transactionId(exchangeTransactionSaved.getTransactionId())
                 .currencyAmount(currencyAmount).build();
     }
 
-    private void checkCurrencyPair(AtomicReference<CurrencyType> base, AtomicReference<CurrencyType> symbols, String currencyPair){
+    @Override
+    public Page<ExchangeTransaction> conversionList(int pageNumber, int pageSize, String transactionId, LocalDateTime transactionDate) {
+        pageSize = pageSize == 0 ? DEFAULT_PAGE_SIZE : pageSize;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("transactionDate").descending());
+        if (!ObjectUtils.isEmpty(transactionId)) {
+            return exchangeRepository.findByTransactionId(UUID.fromString(transactionId), pageable);
+        }
+        if (!ObjectUtils.isEmpty(transactionDate)) {
+            return exchangeRepository.findAllWithTransactionDateTimeBefore(transactionDate, pageable);
+        }
+        return exchangeRepository.findAll(pageable);
+    }
+
+    private void checkCurrencyPair(AtomicReference<CurrencyType> base, AtomicReference<CurrencyType> symbols, String currencyPair) {
         Pattern pattern = Pattern.compile("([A-Z]{3})([A-Z]{3})");
         Matcher matcher = pattern.matcher(currencyPair);
         if (matcher.find() && currencyPair.length() == 6) {
@@ -84,7 +104,7 @@ public class ExchangeServiceImpl implements ExchangeService {
                 throw new InvalidCurrency(String.format("Invalid currency! %s", e.getMessage()));
             }
         } else {
-            log.error(String.format("Currency pair not match! %s",currencyPair));
+            log.error(String.format("Currency pair not match! %s", currencyPair));
             throw new InvalidCurrency(String.format("Currency pair not match! %s", currencyPair));
         }
     }
@@ -102,6 +122,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<CurrencyRate> requestEntity = new HttpEntity<>(null, headers);
         ResponseEntity<CurrencyRate> result = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, CurrencyRate.class);
+        log.info(String.format("Rates were successfully pulled from rates Api. base:%s symbols:%s",base, symbols));
         return result.getBody();
     }
 }

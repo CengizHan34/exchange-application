@@ -1,4 +1,4 @@
-package com.example.exchangeapplication.modal;
+package com.example.exchangeapplication.dto;
 
 import com.example.exchangeapplication.enums.CurrencyType;
 import lombok.Data;
