@@ -1,0 +1,104 @@
+{
+	"info": {
+		"_postman_id": "7f910275-4031-4531-9e34-a2e88ab229c8",
+		"name": "Exchange Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Exchange Rate",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/exchange/rate/USDTRY",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"exchange",
+						"rate",
+						"USDTRY"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Exchange Conversion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "    {\n            \"sourceCurrency\": \"TRY\",\n            \"targetCurrency\": \"USD\",\n            \"sourceAmount\" : 800\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/exchange/conversion",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"exchange",
+						"conversion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Conversion List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/exchange/conversion-list?pageNumber=0&pageSize=10",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"exchange",
+						"conversion-list"
+					],
+					"query": [
+						{
+							"key": "pageNumber",
+							"value": "0"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						},
+						{
+							"key": "transactionId",
+							"value": "831fd769-0f96-4512-8e54-bd4975c54c63",
+							"disabled": true
+						},
+						{
+							"key": "transactionDate",
+							"value": "2022-04-28T19:28:02",
+							"disabled": true
+						},
+						{
+							"key": "transactionId",
+							"value": "6e1cb435-32ed-46e5-b306-4d85f77d5dc0",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
