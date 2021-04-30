@@ -5,7 +5,7 @@ import com.example.exchangeapplication.dto.CurrencyConversionResponse;
 import com.example.exchangeapplication.dto.CurrencyRate;
 import com.example.exchangeapplication.entity.ExchangeTransaction;
 import com.example.exchangeapplication.enums.CurrencyType;
-import com.example.exchangeapplication.exceptions.InvalidCurrency;
+import com.example.exchangeapplication.exceptions.InvalidCurrencyException;
 import com.example.exchangeapplication.repository.ExchangeRepository;
 import com.example.exchangeapplication.service.ExchangeService;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +41,11 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class ExchangeServiceImpl implements ExchangeService {
-    @Value("${rates.api.url}")
-    private String ratesApiUrl;
+    private static final Integer DEFAULT_PAGE_SIZE = 10;
     private final RestTemplate restTemplate;
     private final ExchangeRepository exchangeRepository;
-
-    private static final Integer DEFAULT_PAGE_SIZE = 10;
+    @Value("${rates.api.url}")
+    private String ratesApiUrl;
 
     @Override
     public Map<String, BigDecimal> getExchangeRate(final String currencyPair) {
@@ -101,11 +100,11 @@ public class ExchangeServiceImpl implements ExchangeService {
                 symbols.set(CurrencyType.valueOf(matcher.group(2)));
             } catch (Exception e) {
                 log.error(String.format("Invalid currency! %s", e.getMessage()));
-                throw new InvalidCurrency(String.format("Invalid currency! %s", e.getMessage()));
+                throw new InvalidCurrencyException(String.format("Invalid currency! %s", e.getMessage()));
             }
         } else {
             log.error(String.format("Currency pair not match! %s", currencyPair));
-            throw new InvalidCurrency(String.format("Currency pair not match! %s", currencyPair));
+            throw new InvalidCurrencyException(String.format("Currency pair not match! %s", currencyPair));
         }
     }
 
@@ -122,7 +121,7 @@ public class ExchangeServiceImpl implements ExchangeService {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<CurrencyRate> requestEntity = new HttpEntity<>(null, headers);
         ResponseEntity<CurrencyRate> result = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, CurrencyRate.class);
-        log.info(String.format("Rates were successfully pulled from rates Api. base:%s symbols:%s",base, symbols));
+        log.info(String.format("Rates were successfully pulled from rates Api. base:%s symbols:%s", base, symbols));
         return result.getBody();
     }
 }

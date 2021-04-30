@@ -17,27 +17,27 @@ import java.util.UUID;
 @SpringBootApplication
 public class ExchangeApplication implements CommandLineRunner {
 
-	@Autowired
-	private ExchangeRepository exchangeRepository;
+    @Autowired
+    private ExchangeRepository exchangeRepository;
 
-	public static void main(String[] args) {
-		SpringApplication.run(ExchangeApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ExchangeApplication.class, args);
+    }
 
-	@Bean
-	public RestTemplate restTemplate(){
-		return new RestTemplate();
-	}
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		ExchangeTransaction exchangeTransaction = ExchangeTransaction.builder()
-				.transactionId(UUID.fromString("831fd769-0f96-4512-8e54-bd4975c54c63"))
-				.transactionDate(LocalDateTime.now()).sourceAmount(new BigDecimal("100"))
-				.targetAmount(new BigDecimal("800")).sourceCurrency(CurrencyType.USD)
-				.targetCurrency(CurrencyType.TRY).currencyPrice(new BigDecimal("8"))
-				.build();
+    @Override
+    public void run(String... args) throws Exception {
+        ExchangeTransaction exchangeTransaction = ExchangeTransaction.builder()
+                .transactionId(UUID.fromString("831fd769-0f96-4512-8e54-bd4975c54c63"))
+                .transactionDate(LocalDateTime.now()).sourceAmount(new BigDecimal("100"))
+                .targetAmount(new BigDecimal("800")).sourceCurrency(CurrencyType.USD)
+                .targetCurrency(CurrencyType.TRY).currencyPrice(new BigDecimal("8"))
+                .build();
 
-		exchangeRepository.save(exchangeTransaction);
-	}
+        exchangeRepository.save(exchangeTransaction);
+    }
 }

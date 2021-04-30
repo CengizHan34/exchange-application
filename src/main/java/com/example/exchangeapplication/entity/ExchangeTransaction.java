@@ -20,6 +20,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(indexes = @Index(columnList = "transactionId"))
 public class ExchangeTransaction implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
