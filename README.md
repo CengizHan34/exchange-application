@@ -27,3 +27,5 @@ After the image is created, it will be enough to write docker-compose up -d to t
 Swagger Url 
 
 > localhost:8080/swagger-ui.html
+
+Note : Postman collections is under the dock folder.
