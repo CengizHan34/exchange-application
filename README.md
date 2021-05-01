@@ -12,10 +12,6 @@ Used Technologies
   - Swagger UI
   - JUnit - JMockit
 
-Two methods can be used to run the project.
-1- Run normally
-2- Using docker compose
-
 We will need to create an image to make it up as docker compose.
 
 > mvn spring-boot:build-image
