@@ -119,6 +119,8 @@ public class ExchangeServiceImpl implements ExchangeService {
             e.printStackTrace();
         }
         HttpHeaders headers = new HttpHeaders();
+        headers.add("apikey", "P2PB22n2ROMl7Azw2zOEXmXvuS0XwX5C");
+
         HttpEntity<CurrencyRate> requestEntity = new HttpEntity<>(null, headers);
         ResponseEntity<CurrencyRate> result = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, CurrencyRate.class);
         log.info(String.format("Rates were successfully pulled from rates Api. base:%s symbols:%s", base, symbols));

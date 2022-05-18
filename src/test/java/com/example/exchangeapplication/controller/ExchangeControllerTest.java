@@ -48,7 +48,7 @@ public class ExchangeControllerTest {
         when(exchangeServiceMock.getExchangeRate(currencyPair)).thenReturn(map);
 
         String result = mockMvc.perform(MockMvcRequestBuilders.get(urlBuilder.toString())
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
@@ -64,7 +64,7 @@ public class ExchangeControllerTest {
         when(exchangeServiceMock.getExchangeRate(" ")).thenThrow(new InvalidCurrencyException(""));
 
         mockMvc.perform(MockMvcRequestBuilders.get(urlBuilder.toString())
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.valueOf("text/plain;charset=UTF-8")))
                 .andReturn().getResponse().getContentAsString();
@@ -87,7 +87,7 @@ public class ExchangeControllerTest {
         when(exchangeServiceMock.currencyConversion(request)).thenReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.post(urlBuilder.toString()).contentType(MediaType.APPLICATION_JSON)
-                .content(jsonInput))
+                        .content(jsonInput))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
@@ -105,7 +105,7 @@ public class ExchangeControllerTest {
         urlBuilder.append("/conversion");
 
         mockMvc.perform(MockMvcRequestBuilders.post(urlBuilder.toString()).contentType(MediaType.APPLICATION_JSON)
-                .content(jsonInput))
+                        .content(jsonInput))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
     }
@@ -121,7 +121,7 @@ public class ExchangeControllerTest {
         urlBuilder.append("/conversion");
 
         mockMvc.perform(MockMvcRequestBuilders.post(urlBuilder.toString()).contentType(MediaType.APPLICATION_JSON)
-                .content(jsonInput))
+                        .content(jsonInput))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
     }
@@ -137,7 +137,7 @@ public class ExchangeControllerTest {
         urlBuilder.append("/conversion");
 
         mockMvc.perform(MockMvcRequestBuilders.post(urlBuilder.toString()).contentType(MediaType.APPLICATION_JSON)
-                .content(jsonInput))
+                        .content(jsonInput))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
     }

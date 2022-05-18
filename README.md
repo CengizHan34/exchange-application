@@ -4,13 +4,13 @@ Is a web project used for currency exchange and financial transactions.
 
 Used Technologies
 
-  - Spring Boot
-  - Java 11
-  - JPA
-  - Docker
-  - H2
-  - Swagger UI
-  - JUnit - JMockit
+- Spring Boot
+- Java 11
+- JPA
+- Docker
+- H2
+- Swagger UI
+- JUnit - JMockit
 
 Two methods can be used to run the project.
 1- Run normally
@@ -24,6 +24,6 @@ After the image is created, it will be enough to write docker-compose up -d to t
 
 > docker-compose up -d
 
-Swagger Url 
+Swagger Url
 
 > localhost:8080/swagger-ui.html

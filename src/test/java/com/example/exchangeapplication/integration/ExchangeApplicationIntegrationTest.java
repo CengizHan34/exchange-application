@@ -1,10 +1,10 @@
 package com.example.exchangeapplication.integration;
 
-import com.example.exchangeapplication.tools.PaginatedResponse;
 import com.example.exchangeapplication.dto.CurrencyConversionRequest;
 import com.example.exchangeapplication.dto.CurrencyConversionResponse;
 import com.example.exchangeapplication.entity.ExchangeTransaction;
 import com.example.exchangeapplication.enums.CurrencyType;
+import com.example.exchangeapplication.tools.PaginatedResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.UUID;
@@ -35,14 +34,14 @@ public class ExchangeApplicationIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @BeforeEach
-    void init(){
-        url = String.format("http://localhost:%d",port);
+    void init() {
+        url = String.format("http://localhost:%d", port);
     }
 
     @Test
-    public void exchangeRate(){
+    public void exchangeRate() {
         StringBuilder stringBuilder = new StringBuilder(url).append("/api/exchange").append("/rate/USDTRY");
-        ResponseEntity<Map> response = restTemplate.getForEntity(stringBuilder.toString(),Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity(stringBuilder.toString(), Map.class);
 
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
         Assertions.assertNotNull(response.getBody());
@@ -50,8 +49,7 @@ public class ExchangeApplicationIntegrationTest {
 
     @Test
     public void conversion() throws URISyntaxException {
-        URI uri = new URI(url);
-        CurrencyConversionRequest conversionRequest = new CurrencyConversionRequest(CurrencyType.USD,new BigDecimal("100"),CurrencyType.TRY);
+        CurrencyConversionRequest conversionRequest = new CurrencyConversionRequest(CurrencyType.USD, new BigDecimal("100"), CurrencyType.TRY);
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-COM-PERSIST", "true");
 
@@ -66,7 +64,8 @@ public class ExchangeApplicationIntegrationTest {
 
     @Test
     public void conversionList() {
-        ParameterizedTypeReference<PaginatedResponse<ExchangeTransaction>> responseType = new ParameterizedTypeReference<>() {};
+        ParameterizedTypeReference<PaginatedResponse<ExchangeTransaction>> responseType = new ParameterizedTypeReference<>() {
+        };
 
         StringBuilder stringBuilder = new StringBuilder(url).append("/api/exchange").append("/conversion-list")
                 .append("?pageNumber=0").append("&pageSize=10").append("&transactionId=")
