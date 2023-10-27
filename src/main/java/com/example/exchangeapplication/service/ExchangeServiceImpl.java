@@ -56,14 +56,19 @@ public final class ExchangeServiceImpl implements ExchangeService {
             return exchangeRateDTO;
         }
 
-
         return (ExchangeRateDTO) throwException(exchangeRate.getError().getCode(), exchangeRate.getError().getInfo());
     }
 
     private Object throwException(int code, String message) {
         switch (code) {
-            case 202 -> throw new InvalidCurrencyException(message);
-            case 105 -> throw new AccessRestrictException(message);
+            case 202 -> {
+                log.info(message);
+                throw new InvalidCurrencyException(message);
+            }
+            case 105 -> {
+                log.info(message);
+                throw new AccessRestrictException(message);
+            }
         }
         throw new RuntimeException(message);
     }
@@ -128,7 +133,6 @@ public final class ExchangeServiceImpl implements ExchangeService {
                 baseSymbol.set(matcher.group(1));
                 targetSymbol.set(matcher.group(2));
             } else {
-                log.info(String.format("Invalid currency! %s", currencyPair));
                 throwException(ErrorCodeEnum.INVALID_CURRENCY.getValue(), String.format("Invalid currency! %s", currencyPair));
             }
         } else {
