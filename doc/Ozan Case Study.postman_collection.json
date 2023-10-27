@@ -1,0 +1,99 @@
+{
+	"info": {
+		"_postman_id": "4c2e423d-000f-4cb3-8d3c-55acdc99e2b4",
+		"name": "Ozan Case Study",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1818700"
+	},
+	"item": [
+		{
+			"name": "Currency Rate",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/rate?currency-pair=EUR/TRY",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rate"
+					],
+					"query": [
+						{
+							"key": "currency-pair",
+							"value": "EUR/TRY"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ExchangeCurrency",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/exchange?currency-pair=EUR/TRY&source-amount=2488",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"exchange"
+					],
+					"query": [
+						{
+							"key": "currency-pair",
+							"value": "EUR/TRY"
+						},
+						{
+							"key": "source-amount",
+							"value": "2488"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Conversion List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/conversion-list?page-size=10&transactionId=2357e203-f315-43e3-b8d5-4195a745e14a&page-number=0",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"conversion-list"
+					],
+					"query": [
+						{
+							"key": "page-size",
+							"value": "10"
+						},
+						{
+							"key": "transactionId",
+							"value": "2357e203-f315-43e3-b8d5-4195a745e14a"
+						},
+						{
+							"key": "transaction-date",
+							"value": "2023-10-26T21:18:39",
+							"disabled": true
+						},
+						{
+							"key": "page-number",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
